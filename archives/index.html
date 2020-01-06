@@ -32,7 +32,7 @@
     mediumzoom: false,
     lazyload: false,
     pangu: false,
-    comments: {"style":"tabs","active":true,"storage":true,"lazyload":false,"nav":{"valine":{"text":"Load Valine","order":3}}},
+    comments: {"style":"tabs","active":true,"storage":true,"lazyload":true,"nav":{"valine":{"text":"Load Valine","order":3}}},
     algolia: {
       appID: '',
       apiKey: '',
@@ -481,7 +481,7 @@ NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
       meta: guest,
       pageSize: '10' || 10,
       visitor: true,
-      lang: 'en,zh-cn' || 'zh-cn',
+      lang: '' || 'zh-cn',
       path: location.pathname,
       recordIP: true,
       serverURLs: ''
