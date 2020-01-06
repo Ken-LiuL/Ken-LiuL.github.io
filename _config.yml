@@ -95,6 +95,8 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
+
+plugins: hexo-generator-sitemap
 theme: next
 
 # Deployment
@@ -103,3 +105,9 @@ deploy:
   type: 'git'
   repo: 'https://github.com/Ken-LiuL/Ken-LiuL.github.io'
   branch: master
+
+search:
+  path: search.xml
+  field: post
+  format: html
+  limit: 10000
