@@ -12,17 +12,17 @@
 <li>后序遍历：左-&gt;右-&gt;根</li>
 </ul>
 <p><img src="/images/tree/simple-tree-nodes.png" alt=""></p>
-<p>对于以上这样一个简单的二叉树而言不同的遍历方式产生的节点顺序为：</p>
+<p>对于以上这样一个简单的二叉树，如果我们以不同的遍历方式输出节点的值，那么产生的值的顺序为：</p>
 <ul>
 <li>先序遍历：10 5 1 6 19 17 21</li>
 <li>中序遍历：1 5 6 10 17 19 21</li>
 <li>后序遍历：1 6 5 17 21 19 10</li>
 </ul>
-<p>不同的遍历方式让我们得到的节点列表的顺序不同</p>
+<p>不同的遍历方式输出的节点值的顺序不同</p>
 <h1 id="递归访问"><a href="#递归访问" class="headerlink" title="递归访问"></a>递归访问</h1><p>我们先来看一下一个标准的递归访问树节点的实现方式</p>
 <figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">traverse</span><span class="params">(root *TreeNode, arr  *[]<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> root ==  <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> </span><br><span class="line">	&#125;</span><br><span class="line">	traverse(root.Left, arr)</span><br><span class="line">	traverse(root.Right, arr)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">treeTraversal</span><span class="params">(root *TreeNode)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	arr := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, <span class="number">20</span>)</span><br><span class="line">	<span class="keyword">return</span> traverse(root, &amp;arr)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>这是一个很标准</p>
+<p>这是一个很标准简洁的递归访问树节点的方式，具体的访问顺序如下图</p>
 ]]></content>
       <categories>
         <category>算法</category>
