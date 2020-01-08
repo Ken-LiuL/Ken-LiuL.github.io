@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>二叉树先序中序后序的非递归实现</title>
+    <url>/2020/01/09/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%85%88%E5%BA%8F%E4%B8%AD%E5%BA%8F%E5%90%8E%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？</p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>树</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>二叉树的先序中序后序递归实现</title>
     <url>/2020/01/08/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%85%88%E5%BA%8F%E4%B8%AD%E5%BA%8F%E5%90%8E%E5%BA%8F%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</url>
     <content><![CDATA[<p>二叉树常见的遍历方式有三种（除去Level Traversal，也就是广度优先遍历），分别为先序遍历，中序遍历和后序遍历，而实现方式既有递归的实现方式也有非递归的实现方式。当然，递归的实现方式是最简单的。</p>
@@ -19,18 +31,33 @@
 <li>后序遍历：1 6 5 17 21 19 10</li>
 </ul>
 <p>不同的遍历方式输出的节点值的顺序不同</p>
-<h1 id="递归访问"><a href="#递归访问" class="headerlink" title="递归访问"></a>递归访问</h1><p>我们先来看一下一个标准的递归访问树节点的实现方式</p>
+<h1 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h1><p>我们先来看一下一个标准的递归访问树节点的实现方式</p>
 <figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">traverse</span><span class="params">(root *TreeNode, arr  *[]<span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> root ==  <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> </span><br><span class="line">	&#125;</span><br><span class="line">	traverse(root.Left, arr)</span><br><span class="line">	traverse(root.Right, arr)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">treeTraversal</span><span class="params">(root *TreeNode)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	arr := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>, <span class="number">20</span>)</span><br><span class="line">	<span class="keyword">return</span> traverse(root, &amp;arr)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>这是一个很标准简洁的递归访问树节点的方式，具体的访问顺序如下图</p>
+<p>这是一个很标准简洁的递归访问树节点的方式，具体的访问顺序如下图<br><img src="/images/tree/recursive-tree-traversal.png" alt=""></p>
+<p>这里仅仅画出了从root到左子树的访问和返回顺序，右子树大致相同。箭头上黑色的数字代表进入下一层递归，比如当root代表值为10的节点时候，图中箭头上1代表</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">traverse(root.Left, arr)</span><br></pre></td></tr></table></figure>
+<p>而箭头上红色的数字代表该层函数结束，返回上一层，比如当root代表值为1的节点的时候，图中箭头上的红色4代表</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> root ==  <span class="literal">nil</span> &#123;</span><br><span class="line">     <span class="keyword">return</span> </span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>返回到上一层调用者的步骤。<br>我们通过观察可以发现，我们的递归函数以固定的顺序<strong>访问</strong>树中的每一个节点，但是三种不同的遍历方式要求<strong>处理/输出</strong>的节点的顺序却是不一样，那么如何能用这个统一的递归访问方式来得到不同顺序的处理结果呢？关键点就在处理函数（对节点进行处理的函数，最简单的就是将节点值输出到标准输出流println）的放置位置。</p>
+<h1 id="统一的实现"><a href="#统一的实现" class="headerlink" title="统一的实现"></a>统一的实现</h1><h2 id="先序遍历：根-gt-左-gt-右"><a href="#先序遍历：根-gt-左-gt-右" class="headerlink" title="先序遍历：根-&gt;左-&gt;右"></a>先序遍历：根-&gt;左-&gt;右</h2><p>由于先序遍历是根-&gt;左-&gt;右，那么我们应该把函数放在访问左右节点之前，也就是</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">handle(root.Value)</span><br><span class="line">traverse(root.Left, arr)</span><br><span class="line">traverse(root.Right, arr)</span><br></pre></td></tr></table></figure>
+<p>对应的处理访问次序图为<br><img src="/images/tree/pre-order-recursive-traversal.png" alt=""><br>显而易见，我们以先序(10 5 1 6)的方式处理节点的值。</p>
+<h2 id="中序遍历：左-gt-根-gt-右"><a href="#中序遍历：左-gt-根-gt-右" class="headerlink" title="中序遍历：左-&gt;根-&gt;右"></a>中序遍历：左-&gt;根-&gt;右</h2><p>由于中序遍历是左-&gt;根-&gt;右，那么我们应该把函数放在访问左节点之前和右节点之前，也就是</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">traverse(root.Left, arr)</span><br><span class="line">handle(root.Value)</span><br><span class="line">traverse(root.Right, arr)</span><br></pre></td></tr></table></figure>
+
+<p>对应的处理访问次序图为<br><img src="/images/tree/in-order-recursive-traversal.png" alt=""><br>按箭头上代表步骤的数字来依次查看，确实是按中序遍历（1 5 6 10）来处理节点的值。</p>
+<h2 id="后序遍历：左-gt-右-gt-根"><a href="#后序遍历：左-gt-右-gt-根" class="headerlink" title="后序遍历：左-&gt;右-&gt;根"></a>后序遍历：左-&gt;右-&gt;根</h2><p>由于后序遍历是左-&gt;右-&gt;根，那么我们应该把函数放在访问左节点和右节点之后，也就是</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">traverse(root.Left, arr)</span><br><span class="line">traverse(root.Right, arr) </span><br><span class="line">handle(root.Value)</span><br></pre></td></tr></table></figure>
+
+<p>对应的处理访问次序图为<br><img src="/images/tree/post-order-recursive-traversal.png" alt=""><br>按箭头上代表步骤的数字来依次查看，确实是按后序遍历（1 6 5）来处理节点的值。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>虽然二叉树的遍历方式有三种，但是实现起来其实代码是几乎一摸一样的， 我们以固定的顺序去拜访这些节点，区别只是处理节点的函数摆放的位置不同，先序是还未拜访左右子节点之前就调用处理函数，中序是拜访完左子节点就调用，后序是拜访完左右子节点再调用处理函数。</p>
 ]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
-        <tag>Leetcode</tag>
         <tag>树</tag>
-        <tag>Golang</tag>
       </tags>
   </entry>
 </search>
