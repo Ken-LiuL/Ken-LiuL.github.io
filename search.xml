@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>二叉树的先序中序后序递归实现</title>
+    <url>/2020/01/08/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E5%85%88%E5%BA%8F%E4%B8%AD%E5%BA%8F%E5%90%8E%E5%BA%8F%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<p>二叉树常见的遍历方式有三种（除去Level Traversal，也就是广度优先遍历），分别为先序遍历，中序遍历和后序遍历，而实现方式既有递归的实现方式也有非递归的实现方式。当然，递归的实现方式是最简单的。</p>
+<h1 id="遍历方式"><a href="#遍历方式" class="headerlink" title="遍历方式"></a>遍历方式</h1><p>二叉树的三种遍历方式为：<br>先序遍历：根-&gt;左-&gt;右<br>中序遍历：左-&gt;根-&gt;右<br>后序遍历：左-&gt;右-&gt;根</p>
+<p><img src="./tree/simple-tree-nodes.jpeg" alt=""></p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>Leetcode</tag>
+        <tag>树</tag>
+        <tag>Golang</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2020/01/07/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
