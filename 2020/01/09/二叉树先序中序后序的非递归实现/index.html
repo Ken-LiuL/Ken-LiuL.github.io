@@ -46,17 +46,19 @@
   };
 </script>
 
-  <meta name="description" content="上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？答案是肯定的，只不过如果要达到这种统一，需要引入一些额外的变量和代码进来。">
+  <meta name="description" content="上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？ 答案是肯定的，只不过如果要达到这种统一，需要引入一些额外的变量和代码进来。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="二叉树先序中序后序的非递归实现">
 <meta property="og:url" content="https://ken-liul.github.io/2020/01/09/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%85%88%E5%BA%8F%E4%B8%AD%E5%BA%8F%E5%90%8E%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/index.html">
 <meta property="og:site_name" content="kenliu&#39;s blog">
-<meta property="og:description" content="上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？答案是肯定的，只不过如果要达到这种统一，需要引入一些额外的变量和代码进来。">
+<meta property="og:description" content="上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？ 答案是肯定的，只不过如果要达到这种统一，需要引入一些额外的变量和代码进来。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ken-liul.github.io/images/tree/simple-tree-nodes.png">
 <meta property="article:published_time" content="2020-01-08T16:58:13.000Z">
-<meta property="article:modified_time" content="2020-01-08T17:05:56.206Z">
+<meta property="article:modified_time" content="2020-04-22T10:12:29.745Z">
 <meta property="article:tag" content="树">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ken-liul.github.io/images/tree/simple-tree-nodes.png">
 
 <link rel="canonical" href="https://ken-liul.github.io/2020/01/09/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%85%88%E5%BA%8F%E4%B8%AD%E5%BA%8F%E5%90%8E%E5%BA%8F%E7%9A%84%E9%9D%9E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0/">
 
@@ -240,10 +242,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-01-09 00:58:13 / 修改时间：01:05:56" itemprop="dateCreated datePublished" datetime="2020-01-09T00:58:13+08:00">2020-01-09</time>
+              <time title="创建时间：2020-01-09 00:58:13" itemprop="dateCreated datePublished" datetime="2020-01-09T00:58:13+08:00">2020-01-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-22 18:12:29" itemprop="dateModified" datetime="2020-04-22T18:12:29+08:00">2020-04-22</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -289,13 +297,13 @@
               <span class="post-meta-item-icon">
                 <i class="fa fa-file-word-o"></i>
               </span>
-              <span>119</span>
+              <span>3.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="fa fa-clock-o"></i>
               </span>
-              <span>1 分钟</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -307,9 +315,46 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？答案是肯定的，只不过如果要达到这种统一，需要引入一些额外的变量和代码进来。</p>
+        <p>上一篇中我们讲到对于递归形式的实现，无论是先序、中序还是后序，代码都是统一形式，区别无非就是处理节点的函数位置不同，那么对于非递归的形式，是否也有统一的实现方式呢？</p>
+<p>答案是肯定的，只不过如果要达到这种统一，需要引入一些额外的变量和代码进来。</p>
 <a id="more"></a>
-
+<h1 id="先序和中序遍历"><a href="#先序和中序遍历" class="headerlink" title="先序和中序遍历"></a>先序和中序遍历</h1><p>对于非递归的遍历方式而言，先序和中序是很容易找到统一的代码形式的</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">func</span> <span class="title">handle</span><span class="params">(v <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">      fmt.Println(v)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">func</span> <span class="title">tranverse</span><span class="params">(root *TreeNode)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	cur := root</span><br><span class="line">	s := newStack()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> cur != <span class="literal">nil</span> || !s.isEmpty() &#123;</span><br><span class="line">		<span class="keyword">for</span> cur != <span class="literal">nil</span> &#123;</span><br><span class="line">            s.push(cur)</span><br><span class="line">            <span class="comment">//先序</span></span><br><span class="line">            <span class="comment">//handle(cur.Val)</span></span><br><span class="line">			cur = cur.Left</span><br><span class="line">		&#125;</span><br><span class="line">        cur = s.pop()</span><br><span class="line">        <span class="comment">//中序</span></span><br><span class="line">        <span class="comment">//handle(cur.Val)</span></span><br><span class="line">		cur = cur.Right</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="keyword">return</span> arr</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>代码形式来看是统一的，先把节点放到stack里面， 然后当当前的节点为nil的时候，我们从stack里面把节点pop出来，唯一的区别是处理节点的函数放置位置会有所不同。</p>
+<p><img src="/images/tree/simple-tree-nodes.png" alt=""><br>以上图为例子，stack中元素的变化为:</p>
+<ol>
+<li>[10] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//push 10</li>
+<li>[10, 5] &nbsp;&nbsp;&nbsp;//push 5</li>
+<li>[10, 5, 1] //push完1之后，cur == nil,会跳出循环</li>
+<li>[10, 5]  &nbsp;&nbsp;&nbsp;//pop出1, 接下来cur设为1.right，也就是nil</li>
+<li>[10] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; //此时cur == nil, 会跳出循环, pop出5, cur为5.right, 也就是6</li>
+<li>[10, 6]  &nbsp;&nbsp;&nbsp;&nbsp;//push6之后， cur == nil, 会跳出循环</li>
+<li>[10] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//pop出6，接下来cur设为6.right，也就是nil</li>
+<li>[] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//pop出10，接下来cur设为10.right, 也就是19</li>
+<li>[19] &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;//push 19</li>
+<li>[19, 17] &nbsp; //push 17之后，cur == nil，然后重复上面的步骤直到stack为空</li>
+</ol>
+<p>从观察stack， 我们可以看出来，只要处理元素的函数放在pop之后，那么就是中序，放在循环push里面就是先序。 但是用这个代码框架，我们没办法实现后序遍历，其核心原因是没有办法保存整个栈状态以及区分放到stack里面的元素是左节点还是右节点， 所以无论把处理函数放在哪个位置，都无法兼容后序遍历。</p>
+<h1 id="统一的形式"><a href="#统一的形式" class="headerlink" title="统一的形式"></a>统一的形式</h1><p>如果我们可以有种办法来区分处理的是左节点还是右节点，那么就可以做到兼容后序遍历。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">traversal</span><span class="params">(root *TreeNode)</span> []<span class="title">int</span></span> &#123;</span><br><span class="line">	cur := root</span><br><span class="line">	s := newStack()</span><br><span class="line">	pre := cur</span><br><span class="line">	<span class="keyword">for</span> cur != <span class="literal">nil</span> || !s.isEmpty() &#123;</span><br><span class="line">		<span class="keyword">for</span> cur != <span class="literal">nil</span> &#123;</span><br><span class="line">                 <span class="comment">//先序遍历</span></span><br><span class="line">                <span class="comment">//handle(cur.Val)</span></span><br><span class="line">			s.push(cur)</span><br><span class="line">			cur = cur.Left</span><br><span class="line">		&#125;                               </span><br><span class="line">		cur  = s.seek()  </span><br><span class="line">		<span class="comment">//中序遍历</span></span><br><span class="line">		<span class="comment">//if cur.Right != pre &#123;</span></span><br><span class="line">                  <span class="comment">//  handle(cur.Val)</span></span><br><span class="line">	        <span class="comment">//&#125;</span></span><br><span class="line">		cur = cur.Right </span><br><span class="line">		<span class="keyword">if</span> cur == <span class="literal">nil</span> || cur == pre &#123;</span><br><span class="line">			pre = s.pop()   </span><br><span class="line">			<span class="comment">//后序遍历</span></span><br><span class="line">			<span class="comment">//handle(pre.Val)</span></span><br><span class="line">			cur = <span class="literal">nil</span></span><br><span class="line">		&#125; 	</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> arr</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先我们添加了一个pre变量， pre指向的永远都是上一次pop出来的元素，然后核心的部分其实在这段代码</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> cur == <span class="literal">nil</span> || cur == pre &#123;</span><br><span class="line">	pre = s.pop()   </span><br><span class="line">	<span class="comment">//后序遍历</span></span><br><span class="line">	<span class="comment">//handle(pre.Val)</span></span><br><span class="line">	cur = <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们并没有马上pop， 而是选择性pop，并用pre变量记录下上次pop的元素，用这样的方式来改变节点访问的顺序， 在这种遍历方式下，父节点会被访问两次, 第一次作为临时节点，我们拿到右节点，所以<code>cur = s.seek()</code> , 而不是pop， 然后我们通过 <code>cur = cur.Right</code>拿到右节点push到stack里面去进行处理，当进行到叶子节点也就是<code>cur == nil</code>判断的时候， 我们把节点pop出来，并且<code>pre = s.pop; cur = nil</code>，此时会再次去访问一次父节点<code>cur = s.seek()</code>，由于<code>cur=cur.Right; pre == cur</code>， 所以我们会把父节点此时pop出去。这里两次访问父节点， 其实模拟了递归方式里保存栈空间的操作，把父节点的信息保存下来了。</p>
+<p>还是以上图为例， 当我们第一次跳出for循环之后，栈的变换为：</p>
+<ol>
+<li><p>[10, 5, 1]</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  cur  = s.seek() <span class="comment">//此时cur为1 </span></span><br><span class="line"><span class="comment">//中序遍历</span></span><br><span class="line"><span class="comment">//if cur.Right != pre &#123;</span></span><br><span class="line">       <span class="comment">//  handle(cur.Val)</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line">cur = cur.Right  <span class="comment">//此时cur为nil</span></span><br><span class="line"><span class="keyword">if</span> cur == <span class="literal">nil</span> || cur == pre &#123;</span><br><span class="line">	pre = s.pop()  <span class="comment">//pre为 1 </span></span><br><span class="line">	<span class="comment">//后序遍历</span></span><br><span class="line">	<span class="comment">//handle(pre.Val)</span></span><br><span class="line">	cur = <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>[10, 5]</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">  cur  = s.seek() <span class="comment">//此时cur为5, 第一次访问父节点</span></span><br><span class="line"><span class="comment">//中序遍历</span></span><br><span class="line"><span class="comment">//if cur.Right != pre &#123;</span></span><br><span class="line">       <span class="comment">//  handle(cur.Val)</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line">   cur = cur.Right  <span class="comment">//此时cur为6, pre为1</span></span><br><span class="line">   <span class="comment">//接下来会把cur push到stack里面去并跳出循环</span></span><br></pre></td></tr></table></figure></li>
+<li><p>[10, 5, 6]</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  cur  = s.seek() <span class="comment">//此时cur为6</span></span><br><span class="line"><span class="comment">//中序遍历</span></span><br><span class="line"><span class="comment">//if cur.Right != pre &#123;</span></span><br><span class="line">       <span class="comment">//  handle(cur.Val)</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line">cur = cur.Right  <span class="comment">//此时cur为nil</span></span><br><span class="line"><span class="keyword">if</span> cur == <span class="literal">nil</span> || cur == pre &#123;</span><br><span class="line">	pre = s.pop()  <span class="comment">//pre为 6 </span></span><br><span class="line">	<span class="comment">//后序遍历</span></span><br><span class="line">	<span class="comment">//handle(pre.Val)</span></span><br><span class="line">	cur = <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>[10, 5]</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">  cur  = s.seek() <span class="comment">//此时cur为5, 第二次访问父节点</span></span><br><span class="line"><span class="comment">//中序遍历</span></span><br><span class="line"><span class="comment">//if cur.Right != pre &#123;</span></span><br><span class="line">       <span class="comment">//  handle(cur.Val)</span></span><br><span class="line"><span class="comment">//&#125;</span></span><br><span class="line">   cur = cur.Right  <span class="comment">//此时cur为6, pre 也为6</span></span><br><span class="line">   <span class="comment">//此时cur == pre, 代表右节点已经访问过了, 我们需要pop</span></span><br><span class="line"><span class="keyword">if</span> cur == <span class="literal">nil</span> || cur == pre &#123;</span><br><span class="line">	pre = s.pop()  <span class="comment">//pre为 5 </span></span><br><span class="line">	<span class="comment">//后序遍历</span></span><br><span class="line">	<span class="comment">//handle(pre.Val)</span></span><br><span class="line">	cur = <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>【10]</p>
+</li>
+</ol>
+<p>从上面的步骤我们可以看出来我们的代码清楚分离了各个节点处理的阶段，如果放在for循环里就是先序，如果放在seek后就是中序，如果放在pop后就是后序。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>这里的核心就是只有当前节点下面的子节点都访问过之后，我们才去pop，不然就用seek来获得其子节点，这样就模拟了栈，其次，用额外的变量去记录上次访问过的节点，用来识别是否右子树已经访问过了。</p>
 
     </div>
 
@@ -392,6 +437,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#先序和中序遍历"><span class="nav-number">1.</span> <span class="nav-text">先序和中序遍历</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#统一的形式"><span class="nav-number">2.</span> <span class="nav-text">统一的形式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -466,12 +512,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">2k</span>
+    <span title="站点总字数">5k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">2 分钟</span>
+    <span title="站点阅读时长">4 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>
