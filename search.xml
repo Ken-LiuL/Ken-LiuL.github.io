@@ -13,6 +13,9 @@
 <h1 id="环路的起点"><a href="#环路的起点" class="headerlink" title="环路的起点"></a>环路的起点</h1><p>如果我们同时需要直到环路从哪个node开始，如<a href="https://leetcode.com/problems/linked-list-cycle-ii/" target="_blank" rel="noopener">leetcode中的这道题</a>，还需要一个些额外的逻辑来处理。</p>
 <figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">fast, slow = head, head</span><br><span class="line"><span class="keyword">for</span> steps_taken &gt; <span class="number">0</span> &#123;</span><br><span class="line">    fast = fast.Next</span><br><span class="line">    steps_taken--</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> fast != slow &#123;</span><br><span class="line">    fast = fast.Next</span><br><span class="line">    slow = slow.Next</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> slow</span><br></pre></td></tr></table></figure>
 <p>上面这段代码可以帮助我们找到作为环起点的node，这里初看可能有点不是很直观，但是内在的逻辑很简单。我们假设整个单链表的长度（节点数）为N， 环的长度为L，环的起点的index为I 那么第一个for循环跑完之后，fast指针位于L的位置， 由于<code>N = L + I</code>，那么快指针再走<strong>I</strong>步就到了loop的起点，此时慢指针处于0的位置，慢指针走<strong>I</strong>步也到了loop的起点， 所以在第二个loop里，我们让快慢指针同时往前走，如果他们相遇，就代表他们同步到达了loop的起点。</p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><ol>
+<li><a href="http://www.siafoo.net/algorithm/11" target="_blank" rel="noopener">http://www.siafoo.net/algorithm/11</a></li>
+</ol>
 ]]></content>
       <categories>
         <category>算法</category>
