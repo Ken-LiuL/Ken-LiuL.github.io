@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Boyer-Moore 算法</title>
+    <url>/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p>今天在做Leetcode上的<a href="https://leetcode.com/problems/majority-element/" target="_blank" rel="noopener">这道找到数组中的majority element</a>题目时候，发现了一个有意思的算法，Boyer-Moore算法，可以在不借助哈希表和排序的情况下，以O(n)的时间复杂度来解决这个问题。</p>
+<a id="more"></a>
+
+<h1 id="常规解法"><a href="#常规解法" class="headerlink" title="常规解法"></a>常规解法</h1><h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>如果我们首先将数组进行排序，然后直接返回中间的数，那么这个数字肯定是majority element。</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"sort"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    sort.Ints(nums)</span><br><span class="line">    <span class="keyword">return</span> nums[<span class="built_in">len</span>(nums)/<span class="number">2</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简洁， 时间复杂度为O(NlogN)， 空间复杂度为常数项。</p>
+<h2 id="哈希"><a href="#哈希" class="headerlink" title="哈希"></a>哈希</h2><p>用哈希表记录下每个数字出现的次数，然后当某个数字出现的次数超过1/2的时候，就可以将其返回。</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">     dict := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>)</span><br><span class="line">     <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums &#123;</span><br><span class="line">         dict[n]++</span><br><span class="line">         <span class="keyword">if</span> dict[n] &gt; <span class="built_in">len</span>(nums) /<span class="number">2</span> &#123;</span><br><span class="line">             <span class="keyword">return</span> n</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>时间复杂度为O(N)，但是空间复杂度为O(N)，并且涉及到哈希表的读取写入和扩容，实际时间并不快。</p>
+<h1 id="Boyer-Moore算法"><a href="#Boyer-Moore算法" class="headerlink" title="Boyer-Moore算法"></a>Boyer-Moore算法</h1><p>该算法可以用O(1)的空间复杂度和O(N)的时间复杂度来解决此类问题，最早在<a href="http://www.cs.rug.nl/~wim/pub/whh348.pdf" target="_blank" rel="noopener">这篇论文</a>被提出。我们先看看代码 </p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    count, res := <span class="number">0</span>, nums[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> _,  n := <span class="keyword">range</span> nums[<span class="number">1</span>:] &#123;</span><br><span class="line">        <span class="keyword">if</span> count == <span class="number">0</span> &#123;</span><br><span class="line">            res = n</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> n == res &#123;</span><br><span class="line">            count++</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            count--</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以假设majority element为s， 那么数组可以视为[a…s…c…s…b..d…s…s]， 也就是各个s元素之间穿插着其他的元素，由于s的数量超过所有的元素加起来的数量，那么至少有两个s元素连在一起，那么上述的count最终肯定为正数，并且res就为我们要找的元素。<br>假设nums为</p>
+<figure class="highlight golang"><table><tr><td class="code"><pre><span class="line">[<span class="number">5</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>res为5， count++ 一直到2</li>
+<li>遇到0，count– 到1</li>
+<li>遇到0， count– 到0</li>
+<li>res为0， count++ 为1</li>
+<li>遇到5， count– 到0</li>
+<li>res为5， count++ 为1</li>
+<li>遇到0， count– 到0</li>
+<li>res为0， count++ 为1</li>
+<li>遇到0， count++ 到2</li>
+<li>遇到5， count– 为1</li>
+<li>返回5作为majority element</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Boyer-Moore算法虽然并不直观，但是有良好的时间复杂度和空间复杂度，并且实现的代码非常简洁干净，多思考算法所蕴含的逻辑有助于掌握该算法。</p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>数组</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>动态规划问题的思路和技巧</title>
     <url>/2020/04/24/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%A4%A7%E9%83%A8%E5%88%86%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<p>动态规划是算法中最常见的一类问题之一，其解题思路常常为，将大问题分解为小问题，并且建立起通过解决小问题到解决大问题的对应关系来得到最终的答案，一旦找了分解问题和合并小问题答案的方程，问题本身就迎刃而解。然而，对于具体实现来说，从找到对应关系到最优的实现方式之间往往有着一些小技巧，这篇文章主要展开讲讲如何用一套思维模式和技巧来解决优化大部分动态规划的问题。</p>

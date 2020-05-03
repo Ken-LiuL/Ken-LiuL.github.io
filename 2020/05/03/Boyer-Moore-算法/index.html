@@ -46,19 +46,19 @@
   };
 </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="kenliu&#39;s blog">
-<meta property="og:url" content="https://ken-liul.github.io/tags/%E9%93%BE%E8%A1%A8/index.html">
+  <meta name="description" content="今天在做Leetcode上的这道找到数组中的majority element题目时候，发现了一个有意思的算法，Boyer-Moore算法，可以在不借助哈希表和排序的情况下，以O(n)的时间复杂度来解决这个问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Boyer-Moore 算法">
+<meta property="og:url" content="https://ken-liul.github.io/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/index.html">
 <meta property="og:site_name" content="kenliu&#39;s blog">
+<meta property="og:description" content="今天在做Leetcode上的这道找到数组中的majority element题目时候，发现了一个有意思的算法，Boyer-Moore算法，可以在不借助哈希表和排序的情况下，以O(n)的时间复杂度来解决这个问题。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:tag" content="Algorithm">
-<meta property="article:tag" content="Distributed System">
-<meta property="article:tag" content="Kubernetes">
-<meta property="article:tag" content="Kafka">
-<meta property="article:tag" content="Functional Programming">
+<meta property="article:published_time" content="2020-05-03T09:46:14.000Z">
+<meta property="article:modified_time" content="2020-05-03T10:34:39.717Z">
+<meta property="article:tag" content="数组">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://ken-liul.github.io/tags/%E9%93%BE%E8%A1%A8/">
+<link rel="canonical" href="https://ken-liul.github.io/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/">
 
 
 <script id="page-configurations">
@@ -66,11 +66,11 @@
   CONFIG.page = {
     sidebar: "",
     isHome: false,
-    isPost: false
+    isPost: true
   };
 </script>
 
-  <title>标签: 链表 | kenliu's blog</title>
+  <title>Boyer-Moore 算法 | kenliu's blog</title>
   
 
 
@@ -213,54 +213,164 @@
           <div class="content">
             
 
+  <div class="posts-expand">
+      
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h1 class="collection-header">链表
-          <small>标签</small>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ken-liul.github.io/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="kenliu's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Boyer-Moore 算法
         </h1>
-      </div>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-05-03 17:46:14 / 修改时间：18:34:39" itemprop="dateCreated datePublished" datetime="2020-05-03T17:46:14+08:00">2020-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="Boyer-Moore 算法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/03/Boyer-Moore-%E7%AE%97%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-file-word-o"></i>
+              </span>
+              <span>1.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-clock-o"></i>
+              </span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <h1 class="collection-header">2020</h1>
+        <p>今天在做Leetcode上的<a href="https://leetcode.com/problems/majority-element/" target="_blank" rel="noopener">这道找到数组中的majority element</a>题目时候，发现了一个有意思的算法，Boyer-Moore算法，可以在不借助哈希表和排序的情况下，以O(n)的时间复杂度来解决这个问题。</p>
+<a id="more"></a>
+
+<h1 id="常规解法"><a href="#常规解法" class="headerlink" title="常规解法"></a>常规解法</h1><h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><p>如果我们首先将数组进行排序，然后直接返回中间的数，那么这个数字肯定是majority element。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"sort"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    sort.Ints(nums)</span><br><span class="line">    <span class="keyword">return</span> nums[<span class="built_in">len</span>(nums)/<span class="number">2</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简洁， 时间复杂度为O(NlogN)， 空间复杂度为常数项。</p>
+<h2 id="哈希"><a href="#哈希" class="headerlink" title="哈希"></a>哈希</h2><p>用哈希表记录下每个数字出现的次数，然后当某个数字出现的次数超过1/2的时候，就可以将其返回。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">     dict := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>)</span><br><span class="line">     <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums &#123;</span><br><span class="line">         dict[n]++</span><br><span class="line">         <span class="keyword">if</span> dict[n] &gt; <span class="built_in">len</span>(nums) /<span class="number">2</span> &#123;</span><br><span class="line">             <span class="keyword">return</span> n</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>时间复杂度为O(N)，但是空间复杂度为O(N)，并且涉及到哈希表的读取写入和扩容，实际时间并不快。</p>
+<h1 id="Boyer-Moore算法"><a href="#Boyer-Moore算法" class="headerlink" title="Boyer-Moore算法"></a>Boyer-Moore算法</h1><p>该算法可以用O(1)的空间复杂度和O(N)的时间复杂度来解决此类问题，最早在<a href="http://www.cs.rug.nl/~wim/pub/whh348.pdf" target="_blank" rel="noopener">这篇论文</a>被提出。我们先看看代码 </p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    count, res := <span class="number">0</span>, nums[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> _,  n := <span class="keyword">range</span> nums[<span class="number">1</span>:] &#123;</span><br><span class="line">        <span class="keyword">if</span> count == <span class="number">0</span> &#123;</span><br><span class="line">            res = n</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> n == res &#123;</span><br><span class="line">            count++</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            count--</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以假设majority element为s， 那么数组可以视为[a…s…c…s…b..d…s…s]， 也就是各个s元素之间穿插着其他的元素，由于s的数量超过所有的元素加起来的数量，那么至少有两个s元素连在一起，那么上述的count最终肯定为正数，并且res就为我们要找的元素。<br>假设nums为</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">5</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>res为5， count++ 一直到2</li>
+<li>遇到0，count– 到1</li>
+<li>遇到0， count– 到0</li>
+<li>res为0， count++ 为1</li>
+<li>遇到5， count– 到0</li>
+<li>res为5， count++ 为1</li>
+<li>遇到0， count– 到0</li>
+<li>res为0， count++ 为1</li>
+<li>遇到0， count++ 到2</li>
+<li>遇到5， count– 为1</li>
+<li>返回5作为majority element</li>
+</ol>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Boyer-Moore算法虽然并不直观，但是有良好的时间复杂度和空间复杂度，并且实现的代码非常简洁干净，多思考算法所蕴含的逻辑有助于掌握该算法。</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-04-22T18:35:05+08:00"
-              content="2020-04-22">
-          04-22
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E7%BB%84/" rel="tag"># 数组</a>
+          </div>
 
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/04/22/%E9%93%BE%E8%A1%A8%E6%98%AF%E5%90%A6%E6%9C%89%E7%8E%AF/" itemprop="url">
-            <span itemprop="name">链表是否有环</span>
-          </a>
-      </h2>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/24/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%A4%A7%E9%83%A8%E5%88%86%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98/" rel="prev" title="动态规划问题的思路和技巧">
+      <i class="fa fa-chevron-left"></i> 动态规划问题的思路和技巧
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
+  
+  
+  
 
-    </div>
   </div>
-  
-  
-  
-
-  
-
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -307,6 +417,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#常规解法"><span class="nav-number">1.</span> <span class="nav-text">常规解法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#排序"><span class="nav-number">1.1.</span> <span class="nav-text">排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希"><span class="nav-number">1.2.</span> <span class="nav-text">哈希</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Boyer-Moore算法"><span class="nav-number">2.</span> <span class="nav-text">Boyer-Moore算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
