@@ -46,11 +46,10 @@ func majorityElement(nums []int) int {
 func majorityElement(nums []int) int {
     count, res := 0, nums[0]
     for _,  n := range nums[1:] {
-        if count == 0 {
-            res = n
-        }
         if n == res {
             count++
+        } else if count == 0 {
+            res = n
         } else {
             count--
         }
