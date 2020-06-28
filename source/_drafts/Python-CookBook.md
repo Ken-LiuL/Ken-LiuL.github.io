@@ -19,6 +19,7 @@ class MyNumbers:
         self.start += 1
         if self.start > 10:
             raise StopIteration
+        return self.start
 my_number = MyNumbers()
 my_iter = iter(my_number)
 for x in my_iter:
@@ -215,4 +216,225 @@ env = env.new_child()
 env = env.parents
 #现在env['x']等于1
 ```
+
+#字符串处理
+几乎所有有用的程序都会涉及到某些文本处理，不管是解析数据还是产生输出。 这一章将重点关注文本的操作处理，比如提取字符串，搜索，替换以及解析等。
+##字符串分割匹配和搜索
+**string**对象的**split**方法适用范围比较狭窄，而**re.split**则可以适用更广范围的字符串分割
+```python
+>>> a = "a   b   c"
+>>> a.split(' ')
+['a', '', '', 'b', '', '', 'c'] 
+>>> re.split(r'\s+', a)
+['a','b','c']
+#re.split还可以进行多字符分割
+>>> a = 'asdf fjdk; afed, fjek,asdf, foo'
+>>> re.split(r'[;,\s]\s*', a)
+['asdf', 'fjdk', 'afed', 'fjek', 'asdf', 'foo']
+```
+同理，对于**replace**方法，我们也可以使用**re.sub**来实现更高级的文本替代
+```python
+>>> a = 'Today is 11/27/2012. PyCon starts 3/13/2013.'
+>>> re.sub(r'(\d+)/(\d+)/(\d+)', r'\3-\1-\2', a)
+'Today is 2012-11-27. PyCon starts 2013-3-13.'
+#我们还可以使用命名分组来实现上述的功能
+>>> re.sub(r'(?P<month>\d+)/(?P<day>\d+)/(?P<year>\d+)', r'\g<year>-\g<month>-\g<day>', a)
+'Today is 2012-11-27. PyCon starts 2013-3-13.'
+#更高级点的用法， 是可以传入回掉函数来处理sub
+>>> re.sub(r'(\d+)\(\d+)\(\d+)', lambda x:x, a)
+```
+在匹配中我们可以用?如(.*?)来做最短匹配，也可以使用?:如(?:\d+)来指定一个非捕获匹配。
+##字符串格式化
+我们可以使用**rjust()**，**ljust()** 以及 **center()** 来做字符串对齐，比如
+```python
+>>> text = 'Hello World'
+>>> text.ljust(20)
+'Hello World         '
+>>> text.rjust(20)
+'         Hello World'
+>>> text.center(20, '*')
+'****Hello World*****'
+```
+
+**format()** 也可以做到这一点
+```python
+>>> format(text, '>20')
+'         Hello World'
+>>> format(text, '<20')
+'Hello World         '
+>>> format(text, '^20')
+'    Hello World     '
+>>> format(text, '=>20s')
+'=========Hello World'
+>>> '{:>10s} {:>10s}'.format('Hello', 'World')
+'     Hello      World'
+```
+
+而且，我们还可以通过**textwrap** 模块来控制输出字符串的列宽
+```python
+import textwrap
+textwrap.fill(s, 40)
+#还可以配合os.get_terminal_size()来格式化输出
+import os
+col = os.get_terminal_size().columns
+textwrap.fill(s, col)
+```
+#数字日期和时间
+##数字的格式化
+如果需要对浮点数进行四舍五入，我们可以直接使用**round**
+```python
+>>> round(1.23, 1)
+1.2
+>>> round(1.27, 1)
+1.3
+>>> round(1644, -1)
+1640
+>>> round(1655, -2)
+1700
+```
+众所周知，浮点数计算是会存在误差的，所以如果需要更精确的浮点数计算，我们可以使用**Decimal**
+```python
+>>> from decimal import Decimal
+>>> a = Decimal('4.2')
+>>> b = Decimal('2.1')
+>>> a / b
+Decimal('3.333333333333333333333333333')
+#还可以控制计算的规范
+>>> from decimal import localcontext
+>>>  with localcontext() as ctx:
+>>>    ctx.prec = 3
+>>>    print(a / b)
+3.33
+```
+数字进制进行转换的时候，我们常常使用**bin()** ， **orc()** 以及 **hex()** ， 但**format**也可以完成
+```python
+>>> x = 1234
+>>> bin(x)
+'0b10011010010'
+>>> oct(x)
+'0o2322'
+>>> hex(x)
+'0x4d2'
+>>> format(x, 'b')
+'10011010010'
+>>> format(x, 'o')
+'2322'
+>>> format(x, 'x')
+'4d2'
+#反过来可以直接用int
+>>>  int('10011010010', 2)
+1234
+```
+## 随机选择
+**random** 模块有很多函数来进行随机选择或者生成元素
+```python
+>>> import random
+>>> values = [1,2,3,4]
+>>> random.choice(values)  #随机选择
+2
+>>> random.sample(values, 3) #随机抽样
+[3, 1, 2]
+>>> random.shuffle()   #随机打乱
+>>> random.randint(0, 10) #随机数
+>>> random.random()  # 0 - 1
+>>> random.getrandbits(2) #N bit 随机数
+```
+##日期和时间
+python的datetime是一个模块，有好几个类用来进行时间和日期的操作
+* date 日期类
+* time 时间类
+* datetime 日期时间
+* timedelta 表示时间差
+* tzinfo  时区信息
+* timezone  时区
+
+用datetime和timedelta可以进行时间计算
+```python
+>>> from datetime import timedelta, datetime
+>>> a = datetime(2012, 9, 23)
+>>> print(a + timedelta(days=10))
+2012-10-03 00:00:00
+>>> b = datetime(2012, 12, 21)
+>>> b - a
+datetime.timedelta(days=89)
+
+```
+字符串转为时间
+```python
+>>> cday = datetime.strptime('2020-12-01 19:23:23', '%Y-%m-%d, %H:%M:%S')
+```
+时间格式化
+```python
+>>> now = datetime.now()
+>>> print(now.strftime('%a, %b %d %H:%M'))
+```
+时区的设置
+```python
+>>> tz = timezone(timedelta(hours=8))
+>>> now = datetime.now()
+>>> dt = now.astimezone(tz)
+```
+ 需要注意的一点是, **strptime** 性能并不好，并且关于时区的问题，最好是使用**pytz** 模块
+ ```python
+>>> from pytz import timezone
+>>> central = timezone('US/Central)
+>>> now = central.localize(datetime.now()) #得到美国时区的当前时间
+>>>  now.astimezone(timezone('Asia/Shanghai')) #得到上海时区
+ ```
+**pytz** 是一个第三方库，需要安装
+#迭代器与生成器 
+迭代器其实就是实现了迭代协议的对象，任何一个实现了__next__方法的对象都是一个迭代器，我们常常会把__iter__也实现了，当调用iter(obj)的时候，其实就是调用了对象的__iter__方法 
+```python
+class Iter:
+    def __init__(self):
+        self.val = 0
+    def __iter__(self):
+        return self
+    def __next__(self):
+        self.val += 1
+        if self.val > 10:
+            raise StopIteration
+        return self.val
+it  = iter(Iter())
+for v in it:
+    print(it)
+```
+那生成器是什么呢？**yield**就构建了一个生成器，生成器实现了迭代器协议
+```python
+def my_range():
+    i = 0
+    while i < 100:
+        yield i
+for i in range_():
+    print(i)
+```
+上面的**my_range**就是一个生成器，调用**my_range()** 之后会返回一个Generator对象，这个对象就实现了迭代器协议，可以进行各种迭代器的操作。如果我们想要对实现了迭代器协议的对象进行切片操作的话，那么就需要使用**itertools.islice()**
+```python
+import itertools
+for i in itertools.islice(g, 10, 20):
+    print(i)
+```
+**itertools** 中还有用于过滤数据的**dropwhile** 方法
+```python
+a = (i for i in range(10))
+for i in dropwhile(lambda x: x < 5, a):
+    print(i)
+#会打印出来5, 6, 7, 8, 9
+#dropwhile会从前往后读数据，直到遇到第一个False，那么就会输出后续的所有元素
+#值得注意的是这里只会处理第一个False
+```
+**itertools** 中还有有很多有用的处理迭代器对象的方法
+```python
+from itertools import permutations, combinations, zip_longest, chain
+>>> a = [1,2,3]
+>>> list(permutations(a))    #排列
+[(1, 2, 3), (1, 3, 2), (2, 1, 3), (2, 3, 1), (3, 1, 2), (3, 2, 1)]
+>>> list(combinations(a, 2))    #组合
+[(1, 2), (1, 3), (2, 3)]
+>>> zip_longest([1,2], [3,4,5]) #返回最长的zip结果，默认的zip是最短的
+>>>chain([1,2,3], ['x', 'y', 'z']) #从逻辑上组合多个迭代器对象，然后进行统一的操作
+```
+
+
+
 
