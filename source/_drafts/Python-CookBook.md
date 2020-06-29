@@ -8,23 +8,6 @@ Python是一门非常好作为入门学习的编程语言，语言简洁干练�
 <!-- more -->
 
 # 数据结构和算法
-## 迭代器
-迭代器有两个基本的方法：iter()和next()。我们可以实现自己的迭代器，通过实现__iter__和__next__方法。
-```python
-class MyNumbers:
-    def __iter__(self):
-        self.start = 0
-        return self
-    def __next__(self):
-        self.start += 1
-        if self.start > 10:
-            raise StopIteration
-        return self.start
-my_number = MyNumbers()
-my_iter = iter(my_number)
-for x in my_iter:
-    print(x)
-```    
 ## 序列分解
 任何的序列（或者是可迭代对象）可以通过一个简单的赋值操作来分解为单独的变量, 如果变量总数和序列里的元素数目不匹配会抛出ValueError，不过我们可以用*操作符来处理这种情况。
 ```Python
@@ -434,6 +417,159 @@ from itertools import permutations, combinations, zip_longest, chain
 >>> zip_longest([1,2], [3,4,5]) #返回最长的zip结果，默认的zip是最短的
 >>>chain([1,2,3], ['x', 'y', 'z']) #从逻辑上组合多个迭代器对象，然后进行统一的操作
 ```
+**iter** 还有一个用法是可以接受一个函数，和结尾标记作为输入参数，它会创建一个迭代器，然后不对调用该函数，直到返回的是结尾标记
+```python
+>>> a = [1,2,3,4,5]
+>>> for i in iter(lambda : a.pop(), 1):
+...     print(i)
+...
+5
+4
+3
+2
+```
+##Yield
+我们可以通过**yield**来得到一个生成器
+```python
+def gen():
+    for i in range(10):
+        yield i 
+```
+如果需要嵌套生成器，那么需要使用**yield from**
+```python
+def gen2():
+    yield from gen()
+```
+等价于
+```python
+def gen2():
+    for i in gen():
+        yield i
+```
+**yield**的使用中，一个难点或者说容易产生误解的地方是，当他和**send**一起使用的时候
+```
+>>> def ys():
+...    i = 0
+...    while True:
+...        a = yield i
+...        if a > 10:
+...            break
+...        i = a
+>>> g = ys()
+>>> print(g.send(None))
+0
+>>> print(g.send(1))
+1
+>>> print(g.send(20))
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+StopIteration
+```
+首先**next**和**send(None)** 是等价的，所以**g.send(None)** 等价于 **next(g)** ，关键的地方在于**a = yield i**这一行是怎么执行的，当我们第一次调用**g.send(None)** 的时候， 程序会运行到**yield i**这里，也就是会把**i**的值，当然此时是0，返回出来，所以打印出来的结果为0，然后此时程序挂起，值得注意的是此时变量**a**并没有得到任何的赋值，然后当调用**g.send(1)** 的时候，程序恢复执行，把1赋值给**a**然后程序一直运行到下一个**yield**的地方，此时**i**为1，那么也就会把1返回出去并打印出来。当**g.send(20)**的时候，**a**被赋值为20，然后循环会退出，那么我们就看到**StopIteration**被抛出来了。
+#文件与IO
+##文件写入和打印 
+**print**最常用的输出函数，当使用**print**的时候，我们可以使用**sep**和**end**两个关键字参数来格式化输出
+```python
+>>>print('hello', 'world', sep=',', end='!!\n')
+hello,world!!
+```
+一个常见的写文件的方式为
+```python
+with open('file', 'w+') as f:
+    f.write('test')
+```
+如果我们需要追加到既有的文件中，那就需要使用**a**模式，但是如果我们想要只有该文件不存在的时候才写入，一种方式是显示判断文件是否存在，另外一种方式是指定模式为**x**
+##字符串IO
+可以使用**io.StringIO()**和**io.BytesIO()** 来创建类文件对象操作字符串数据
+```python
+>>> s = io.StringIO()
+>>> s.write('Hello World\n')
+>>> print('This is a test', file=s)
+>>> s.getvalue()
+'Hello World\nThis is a test\n'
+>>> s = io.BytesIO()
+>>> s.write(b'binary data')
+>>> s.getvalue()
+b'binary data'
+```
+##mmap
+mmap可以让我们想操作内存一样操作文件
+```python
+import mmap
+import os
+#打开一个文件，并且使用mmap映射到内存里
+mapped = mmap.mmap(os.open(filename, os.O_RDWR), os.path.getsize(filename), access=mmap.ACCESS_WRITE)
+#如果第一个参数设为-1，那么映射的是一段匿名内存
+with mmap.mmap(-1, 13) as mm:
+    mm.write(b'Hello World!')
+```
+##文件路径
+对于文件路径的操作，**os.path**提供了很多方法
+```python
+>>> import os
+>>> path = '/users/test/data/data.csv'
+>>> os.path.basename(path)
+'data.csv'
+>>> os.path.dirname(path)
+'/users/test/data'
+>>> os.path.join('/test', 'data')
+'/test/data'
+>>> os.path.exits('/test/data')
+False
+>>> os.path.isdir('/test/data')
+False
+>>> os.path.isfile('/test/data')
+True
+>>> os.path.islink('/test/data')
+False
+>>> os.path.getsize('/test/data')
+>>> os.path.getmtime('/test/data')
+>>> os.listdir('/test')
+```
+python3.4版本之后引入了**pathlib**这个包，用这个包可以让我们用更优雅的方式来处理文件路径
+```python
+>>> import os
+#旧方式
+>>> base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#pathlib可以以面向对象的方式来调用
+>>> from pathlib import Path
+>>> base_dir = Path(__file__).resolve().parent.parent
+>>> file_path = base_dir / 'data'
+>>> file_path.is_dir()
+False
+>>> file_path.is_file()
+True
+>>> file_path.is_symlink()
+False
+>>> file_path..absolute()
+>>> file_path.exits()
+False
+#使用pathlib还可以直接读取文件
+>>> file_path.read_text()
+```
+相比较**os.path**的方式而言，**pathlib**显得更更干净利落
+##临时文件
+如果需要使用临时文件，我们可以自己显示的管理
+```python
+>>> import tempfile
+>>> temp_file  = tempfile.mkstemp()
+>>> temp_dir = tempfile.mkdtemp()
+```
+但是这样仅仅是创建了临时的文件和文件夹，我们需要自己处理打开，关闭和删除操作，更好的方式是使用**TemporaryFile**或**NamedTemporaryFile**
+```python
+from tempfile import TemporaryFile, NamedTemporaryFile
+with TemporaryFile('w') as f:
+    f.write('test')
+#如果使用NamedTemporaryFile的话，还会额外的分配临时文件的名字出来
+with NamedTemporaryFile('w') as f:
+    print(f.name)
+```
+
+
+
+
+
+
 
 
 
