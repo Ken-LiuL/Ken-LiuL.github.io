@@ -564,13 +564,59 @@ with TemporaryFile('w') as f:
 with NamedTemporaryFile('w') as f:
     print(f.name)
 ```
+#类与对象
+##对象的显示
+对于python的类而言，有三个函数可以指定其输出的时候的样子
+```python
+class Test:
+    #str()函数，或者print的时候调用
+    def __str__(self):
+        pass
+    #在控制台操作的时候打印出来的
+    def __repr__(self):
+        pass
+    #format()的时候调用
+    def __format__(self):
+        pass
+ ```
+## 上下文管理协议
+如果想要自己创建的类支持**with**语句的话，需要实现__enter__ 和__exit__方法
+```python
+class Test:
+    def __enter__(self):
+        pass
+    #第一个参数是异常类型
+    #第二个参数是异常值
+    #第三个参数是stacktrace
+    #如果返回True，异常会被清空
+    def __exit__(self, exc_type, exc_val, tb):
+        pass
+ ```
+ ##节省内存的方式创建对象
+ 当我们使用__slots__的时候可以有效节省对象占用的内存，因为内部会用tuple而不是字典来存储对应的属性
+ ```python
+ class Test:
+    __slots__ = ['a','b','c']
+    def __init__(self, a, b, c):
+        sefl.a = a
+        self.b = b
+        self.c = c
+ ```
+ 但是如果使用了__slots__会有两个限制，一个是不支持多继承，另外一个是无法再给是例添加属性
 
-
-
-
-
-
-
-
-
-
+##私有属性
+以_和__开头的属性都可被视为私有属性，区别是__开头的属性会被重命名，所以继承的话无法被覆盖，大部分情况用_开头即可表面这是一个内部属性
+##属性访问
+python中可以像java等面向对象的语言一样设置属性的**getter**和**setter**
+```python
+class Test:
+    def __init__(self, name):
+        self.name =self.name
+    @property
+    def name(self):
+        return self._name
+    @name.setter
+    def name(self, value):
+        self._name = value
+```
+往往当我们想要给属性的访问添加额外的逻辑，比如验证的时候，可以采用这种方式，但是除此之外就没必要了，python不是java
