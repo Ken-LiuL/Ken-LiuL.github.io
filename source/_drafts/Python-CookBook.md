@@ -592,7 +592,7 @@ class Test:
     def __exit__(self, exc_type, exc_val, tb):
         pass
  ```
- ##节省内存的方式创建对象
+ ## 节省内存的方式创建对象
  当我们使用__slots__的时候可以有效节省对象占用的内存，因为内部会用tuple而不是字典来存储对应的属性
  ```python
  class Test:
@@ -620,3 +620,110 @@ class Test:
         self._name = value
 ```
 往往当我们想要给属性的访问添加额外的逻辑，比如验证的时候，可以采用这种方式，但是除此之外就没必要了，python不是java
+## 延迟熟悉和描述器
+当使用**lazyproperty**的时候，属性仅仅在第一次被获取的时候被计算，以后都是直接获取值
+```python
+import math
+class Circle:
+    def __init__(self, radius):
+        self.radius = radius
+    @lazyproperty
+    def area(self):
+        return math.pi * self.radius ** 2
+#这里的area仅会计算一次
+```
+实现了
+```python
+__set__
+__get__
+__delete__
+```
+中任意一个方法的对象就叫做描述器，python中很多特性都使用到了描述器，可以更好实现封装和隐藏实现细节
+```python
+class PositiveNum:
+    def __init__(self, name, value):
+        self.name = name
+        self._value = value
+    def __get__(self, instance, cls):
+        return  self._value
+    def __set__(self, instance, val):
+        if val < 0:
+            raise ValueError('No negative')
+        self._value = val
+```
+上面的**PositiveNum**就是一个描述器，描述器作为其他类的类属性的时候，就会发挥他的作用了
+```python
+class Apple:
+    price = PositiveNum('price', 10)
+
+apple = Apple()
+apple.price
+#当我们访问这个price的时候，会去调用price.__get__方法
+apple.price = 20
+#当我们设置这个price的时候，会去调用price.__set__方法
+apple2 = Apple()
+#但是这样会产生一个问题，由于price是类属性，新创建的apple2实例，
+#price就是20，因为类属性共享
+```
+python中属性的查找顺序是这样的，如果类和基类中有该属性且该属性为带有__set__的描述器（上面的price）就是这种情况，就调用对应的描述器的__set__和__get__方法，否则就是访问实例的字典。另外一点需要说明的是，实例的属性都放在__dict__里，类属性都放在__dict__里，实例的类型是__class__，那么我们可以这样处理
+```python
+class PositiveNum:
+    def __init__(self, name, val):
+        self.name = name
+        self.val = val
+    def __get__(self, instance, cls):
+        return instance.__dict__[self.name] 
+    def __set__(self, instance, val):
+        if val > 0:
+            instance.__dict__[self.name] =  val
+        else:
+            raise ValueError('value has to be positive')
+class Apple:
+    price = PositiveNum('price', 1)
+    def __init__(self):
+        self.price = 10
+
+apple1 = Apple()
+apple1.price = 20
+apple2 = Apple()
+apple2.price == 1
+#这里apple1和apple2的price是独立分开，不互相干扰的，
+#当我们需要访问price的时候，由于在类级别拥有price描述器，所
+#有的访问或者赋值都会转为去调用price.__set__或price.__get__，
+#那既然还是调用__get__和__set__，为什么这一次不一样了？
+#关键地方在            
+#     instance.__dict__[self.name] =  val
+#instance是属性的调用方，也就是apple1或者apple2，
+#instance.__dict__就是例子的属性字典了，
+```
+**所以描述器本质上就是切面编程的一种实现，可以把一些通用的操作提取出来，然后对对象的属性或方法做装饰**
+
+## 弱引用
+python是计数垃圾回收机制， **weakref**可以让我们引用一个对象，但是这个对象的计数并不会增加
+```python
+import sys
+import weakref
+a = Test()
+c1 = sys.getrefcount(a) 
+b =  weakfref.ref(a)
+c2  = sys.getrefcount(b)
+c1 == c2
+```
+弱引用简单的来说，当它引用的对象存在时，则对象可用，当对象不存在时，就返回None，说明对象不存在。程序不会因为对象不在就报错。
+
+## 简化比较
+如果要让对象支持比较操作符，那么就要实现各种大于，小于，等于等内建方法，其实可以直接使用**functools.total_ordering**来简化操作
+```python
+from functools import total_ordering
+@total_ordering
+class Test:
+    def __init__(self, v):
+        self.val = v
+    def __eq__(self, other):
+        return other.val == self.val
+    def __lt__(self, other):
+        return self.val < other.val
+```
+**total_ordering**会自动生成其他的一些内建比较方法
+
+
