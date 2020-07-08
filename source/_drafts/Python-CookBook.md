@@ -447,7 +447,7 @@ def gen2():
         yield i
 ```
 **yield**的使用中，一个难点或者说容易产生误解的地方是，当他和**send**一起使用的时候
-```
+```python
 >>> def ys():
 ...    i = 0
 ...    while True:
@@ -611,7 +611,7 @@ python中可以像java等面向对象的语言一样设置属性的**getter**和
 ```python
 class Test:
     def __init__(self, name):
-        self.name =self.name
+        self._name =self.name
     @property
     def name(self):
         return self._name
@@ -620,7 +620,7 @@ class Test:
         self._name = value
 ```
 往往当我们想要给属性的访问添加额外的逻辑，比如验证的时候，可以采用这种方式，但是除此之外就没必要了，python不是java
-## 延迟熟悉和描述器
+## 延迟属性和描述器
 当使用**lazyproperty**的时候，属性仅仅在第一次被获取的时候被计算，以后都是直接获取值
 ```python
 import math
@@ -698,6 +698,39 @@ apple2.price == 1
 ```
 **所以描述器本质上就是切面编程的一种实现，可以把一些通用的操作提取出来，然后对对象的属性或方法做装饰**
 
+## Method && Function
+Python里面的函数分为类里面的方法和普通的函数，两者都是
+```python
+class Function(object):
+    . . .
+    def __get__(self, obj, objtype=None):
+        "Simulate func_descr_get() in Objects/funcobject.c"
+        if obj is None:
+            return self
+        return types.MethodType(self, obj)
+```
+可以看到的是，首先无论是类方法还是普通函数，都是**Function**的一个对象，其次Function是一个描述器，这意味着，当作为类方法访问的时候，会去调用 **__get__方法**，当用Class.Method的方式调用的时候，就直接返回函数自己，当使用Instance.Method的方式调用的时候，会返回**types.MethodType(self, obj)**，这个方法把函数绑定到类调用方的实例上，这样当该函数被调用的时候，会把**obj**作为第一个参数，也就是**self**作为参数穿进去
+```python
+>>> t = Test()
+>>> t.f
+<bound method Test.f of <__main__.Test object at 0x10e622be0>>
+>>> t.f.__func__
+<function Test.f at 0x10e754ea0>
+>>> t.f.__self__
+<__main__.Test object at 0x10e622be0>
+>>> t.f.__class__
+<class 'method'>
+>>> Test.f.__class__
+<class 'function'>
+>>> Test.f.__self__
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'function' object has no attribute '__self__'
+>>> Test.f.__func__
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'function' object has no attribute '__func__'
+```
 ## 弱引用
 python是计数垃圾回收机制， **weakref**可以让我们引用一个对象，但是这个对象的计数并不会增加
 ```python
@@ -725,5 +758,55 @@ class Test:
         return self.val < other.val
 ```
 **total_ordering**会自动生成其他的一些内建比较方法
+
+
+# 元编程
+## 单例模式
+Python中任何东西都是对象，包括数字，字符串，方法以及类， metaclass就是创建类对象的类
+```python
+class Singleton(type):
+    def __init__(self, *args, **kwargs):
+        self.__instance = None
+        super().__init__(*args, **kwargs)
+
+    def __new__(cls, clsname, bases, clsdict):
+        return super().__new__(cls, clsname, bases, clsdict)
+
+    def __call__(self, *args, **kwargs):
+        if self.__instance is None:
+            self.__instance = super().__call__(*args, **kwargs)
+            return self.__instance
+        else:
+            return self.__instance
+
+# Example
+class Test(metaclass=Singleton):
+    def __init__(self):
+        print('Creating Test')
+
+t = Test()
+```
+当Python解释器加载代码的时候，发现Test类的metaclass是Singleton，此时便依然 次调用Singleton的__new__和__init__方法来创建Test类对象（此时，创建的是Test类，而不是Test的实例，而当运行到 **t = Test()** 的时候，我们需要得到一个Test实例，那么就会调用Singleton的__call__方法去创建实例。
+
+##关于__prepare__
+> Preparing the class namespace Once the appropriate metaclass has been identified, then the class namespace is prepared. If the metaclass has a __prepare__ attribute, it is called as namespace = metaclass.__prepare__(name, bases, **kwds) (where the additional keyword arguments, if any, come from the class definition).
+> If the metaclass has no __prepare__ attribute, then the class namespace is initialised as an empty ordered mapping.
+
+## 可选参数的元类
+在构建元类的时候，我们还可以传入额外的参数，不过这些参数同时需要在__prepare__,__init__和__new__中指定
+```python
+class Meta(type):
+    @classmethod
+    def __prepare__(cls, name, bases, *, debug=False, sync=False):
+        return super().__prepare__(name, bases)
+    def __new__(cls, name, bases, ns, *, debug=False, sync=False):
+        return super().__new__(cls, name, bases, ns)
+    def __init__(self, name, bases, ns, *, debug=False, sync=False):
+        super().__init__(name, bases, ns)
+class Test(metaclass=Meta, debug=True, sync=False):
+    pass
+```
+# 并发编程
+
 
 
