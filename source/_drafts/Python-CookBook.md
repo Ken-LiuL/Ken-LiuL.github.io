@@ -807,6 +807,153 @@ class Test(metaclass=Meta, debug=True, sync=False):
     pass
 ```
 # 并发编程
+## Lock
+锁是并发编程里最基本的primitive
+```python
+import threading
+lock = threading.Lock()
+counter = 0
+def one():
+    global lock, counter
+    lock.acjquire()
+    counter += 1
+    lock.release()
+def two():
+    global lock, counter
+    lock.acquire()
+    counter += 1
+    lock.release()
+
+#或者直接用with
+def three():
+    global lock, counter
+    with lock:
+        counter += 1
+```
+## Event
+python中的Event是用来同步通知线程的，主要用到**wait**和**set**方法
+```python
+import threading
+def test(event):
+    print('start')
+    event.wait()
+    print('end')
+if __name__ == '__main__':
+    event = threading.Event()
+    threading.Thread(target=test, args=(event,))
+    print('init')
+    event.set()
+#当在event.set()调用之前，调用event.wait()的线程会一直等待，等到event.set()调用
+#之后，该线程就会继续执行
+```
+## Condition
+条件量也是一种线程协调的方式，往往可以用于条件性的生产者消费者模型
+```python
+import threading
+cond = threading.Condition()
+n = 0
+def producer():
+    global n
+    cond.acquire()
+    while n < 5:
+        n++
+        cond.notify()
+        cond.wait()
+    cond.release()
+def consumer():
+    global n
+    while True:
+        cond.acquire()
+        n -= 1
+        if n < 0:
+            cond.notify()
+            cond.wait()
+        cond.release()
+```
+当调用**notify**的时候，其他等待的**wait**会被唤醒。这里其实有两个锁，一个锁是上层的**acquire**，一个是**wait**的时候会创建一个锁，基本运行的过程是这样的：
+1. 当producer中acquire执行的时候，会获得Condition的锁A
+2. 当notify执行的时候，会尝试从队列中获取锁并释放掉，此时没有任何锁
+3. 当wait执行的时候，会定义锁B，加入队列，并且acquire， 然后释放锁A，再次获取锁B，陷入等待（如果被notify之后，会再次获取锁A）
+4. consumer端获取了锁A，当consumer去notify的时候，会从队列中拿到锁B，释放掉
+5. 当consumer调用wait的时候，会定义锁C，放入队列，并且acquire，然后释放锁A，再次获取C，陷入等待，而由于consumer已经释放了锁B和锁A，producer会从acquire锁B中醒来，然后再成功获取锁A。
+
+## 定时器
+定时器很简单
+```python
+import threading
+timer = threading.Timer(5, lambda : print('x'))
+timer.start()
+``` 
+## 信号量
+semaphore是量化控制线程的一种手段
+```python
+import  threading
+semaphore = threading.Semaphore(5)
+def test():
+    semaphore.acquire()
+    print('hi')
+    semaphore.release()
+
+for i in range(20):
+    t = threading.Thread(target=test, args=())
+    t.start()
+#同一时间只会有五个线程运行
+```
+## Queue生产者消费者
+由于Queue的put和get是线程安全的，所以可以使用Queue很方便的实现生产者消费者模式
+```python
+from queue import Queue
+def producer(q):
+    while True:
+        q.put(1)
+def consumer(q):
+    while True:
+        data = q.get()
+
+q = Queue()
+t1 = Thread(target=consumer, args=(q,))
+t2 = Thread(target=producer, args=(q,))
+t1.start()
+t2.start()
+```
+## 协程
+我们可以使用协程来替代系统线程实现并发
+```python
+def countdown(n):
+    while n > 0:
+        print('count down for ', n)
+        yield 
+        n -= 1
+
+def countup(n):
+    x = 0
+    while x < n:
+        print('count up as ', x)
+        yield
+        x += 1
+from collections import deque
+class EventLoop:
+    def __init__(self):
+        self._task_queue = deque()
+    def new_task(self, task):
+        self._task_queue.append(task)
+    def run(self):
+        while len(self._task_queue) > 0:
+            task = self._task_queue.popleft()
+            try:
+                next(task)
+                self._task_queue.append(task)
+            except StopIteration:
+                pass
+loop = EventLoop()
+loop.new_task(countdown(10))
+loop.new_task(countdown(5))
+loop.new_task(countup(15))
+loop.new_task(countup(20))
+loop.run()
+```
+
+
 
 
 
