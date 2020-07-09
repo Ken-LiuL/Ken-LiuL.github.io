@@ -594,6 +594,20 @@ class Test:
     def __exit__(self, exc_type, exc_val, tb):
         pass
  ```
+ 同时，我们也可以从contextlib库中来使用contextmanager更好的来做上下文管理
+ ```python
+ import contextlib
+ @contextlib.contextmanager
+ def open_file(filename):
+    f = open(filename, 'r')
+    yield f
+    f.close()
+    return 
+
+with open_file('test') as f:
+    f.readlines()
+ ```
+ contextmanager会把yield之前的内容作为__enter__， yield之后的内容作为__exit__，yield返回的内容作为as
  ## 节省内存的方式创建对象
  当我们使用__slots__的时候可以有效节省对象占用的内存，因为内部会用tuple而不是字典来存储对应的属性
  ```python
@@ -954,6 +968,8 @@ loop.new_task(countup(15))
 loop.new_task(countup(20))
 loop.run()
 ```
+这里每一个任务都是一个协程，EventLoop就是调度器，这里的实现方式颇有点NodeJs的事件循环的意思
+
 
 
 
