@@ -57,23 +57,21 @@ func majorityElement(nums []int) int {
     return res
 }
 ```
-我们可以假设majority element为s， 那么数组可以视为[a...s...c...s...b..d...s...s]， 也就是各个s元素之间穿插着其他的元素，由于s的数量超过所有的元素加起来的数量，那么至少有两个s元素连在一起，那么上述的count最终肯定为正数，并且res就为我们要找的元素。
+我们可以假设majority element为s， 那么数组可以视为[a...s...c...s...b..d...s...s]， 也就是各个s元素之间穿插着其他的元素，由于s的数量超过所有的元素加起来的数量，那么至少有两个s元素连在一起，那么上述的count最终肯定为非负数数，并且res就为我们要找的元素。
 假设nums为
 ```Golang
 [5, 5, 0, 0, 0, 5, 0, 0, 5]
 ```
 
-1. res为5， count++ 一直到2
-2. 遇到0，count-- 到1
-3. 遇到0， count-- 到0
-4. res为0， count++ 为1
+1. res为5，遇到5， count++ 到1
+2. 遇到0，count-- 到0
+3. 遇到0， res为0
+4. 遇到0，count++为1
 5. 遇到5， count-- 到0
-6. res为5， count++ 为1
-7. 遇到0， count-- 到0
-8. res为0， count++ 为1
-9. 遇到0， count++ 到2
+6. 遇到0， count++ 为1
+7. 遇到0， count++ 为2
 10. 遇到5， count-- 为1
-11. 返回5作为majority element
+11. 返回0作为majority element
 
 # 总结
 Boyer-Moore算法虽然并不直观，但是有良好的时间复杂度和空间复杂度，并且实现的代码非常简洁干净，多思考算法所蕴含的逻辑有助于掌握该算法。
