@@ -202,7 +202,7 @@ env = env.parents
 #现在env['x']等于1
 ```
 
-#字符串处理
+# 字符串处理
 几乎所有有用的程序都会涉及到某些文本处理，不管是解析数据还是产生输出。 这一章将重点关注文本的操作处理，比如提取字符串，搜索，替换以及解析等。
 ##字符串分割匹配和搜索
 **string**对象的**split**方法适用范围比较狭窄，而**re.split**则可以适用更广范围的字符串分割
@@ -264,8 +264,8 @@ import os
 col = os.get_terminal_size().columns
 textwrap.fill(s, col)
 ```
-#数字日期和时间
-##数字的格式化
+# 数字日期和时间
+## 数字的格式化
 如果需要对浮点数进行四舍五入，我们可以直接使用**round**
 ```python
 >>> round(1.23, 1)
@@ -324,7 +324,7 @@ Decimal('3.333333333333333333333333333')
 >>> random.random()  # 0 - 1
 >>> random.getrandbits(2) #N bit 随机数
 ```
-##日期和时间
+## 日期和时间
 python的datetime是一个模块，有好几个类用来进行时间和日期的操作
 * date 日期类
 * time 时间类
@@ -430,7 +430,7 @@ from itertools import permutations, combinations, zip_longest, chain
 3
 2
 ```
-##Yield
+## Yield
 我们可以通过**yield**来得到一个生成器
 ```python
 def gen():
@@ -468,8 +468,8 @@ Traceback (most recent call last):
 StopIteration
 ```
 首先**next**和**send(None)** 是等价的，所以**g.send(None)** 等价于 **next(g)** ，关键的地方在于**a = yield i**这一行是怎么执行的，当我们第一次调用**g.send(None)** 的时候， 程序会运行到**yield i**这里，也就是会把**i**的值，当然此时是0，返回出来，所以打印出来的结果为0，然后此时程序挂起，值得注意的是此时变量**a**并没有得到任何的赋值，然后当调用**g.send(1)** 的时候，程序恢复执行，把1赋值给**a**然后程序一直运行到下一个**yield**的地方，此时**i**为1，那么也就会把1返回出去并打印出来。当**g.send(20)**的时候，**a**被赋值为20，然后循环会退出，那么我们就看到**StopIteration**被抛出来了。
-#文件与IO
-##文件写入和打印 
+# 文件与IO
+## 文件写入和打印 
 **print**最常用的输出函数，当使用**print**的时候，我们可以使用**sep**和**end**两个关键字参数来格式化输出
 ```python
 >>>print('hello', 'world', sep=',', end='!!\n')
@@ -494,7 +494,7 @@ with open('file', 'w+') as f:
 >>> s.getvalue()
 b'binary data'
 ```
-##mmap
+## mmap
 mmap可以让我们想操作内存一样操作文件
 ```python
 import mmap
@@ -505,7 +505,7 @@ mapped = mmap.mmap(os.open(filename, os.O_RDWR), os.path.getsize(filename), acce
 with mmap.mmap(-1, 13) as mm:
     mm.write(b'Hello World!')
 ```
-##文件路径
+## 文件路径
 对于文件路径的操作，**os.path**提供了很多方法
 ```python
 >>> import os
@@ -550,7 +550,7 @@ False
 >>> file_path.read_text()
 ```
 相比较**os.path**的方式而言，**pathlib**显得更更干净利落
-##临时文件
+## 临时文件
 如果需要使用临时文件，我们可以自己显示的管理
 ```python
 >>> import tempfile
@@ -566,8 +566,8 @@ with TemporaryFile('w') as f:
 with NamedTemporaryFile('w') as f:
     print(f.name)
 ```
-#类与对象
-##对象的显示
+# 类与对象
+## 对象的显示
 对于python的类而言，有三个函数可以指定其输出的时候的样子
 ```python
 class Test:
@@ -620,7 +620,7 @@ with open_file('test') as f:
  ```
  但是如果使用了__slots__会有两个限制，一个是不支持多继承，另外一个是无法再给是例添加属性
 
-##私有属性
+## 私有属性
 以_和__开头的属性都可被视为私有属性，区别是__开头的属性会被重命名，所以继承的话无法被覆盖，大部分情况用_开头即可表面这是一个内部属性
 ##属性访问
 python中可以像java等面向对象的语言一样设置属性的**getter**和**setter**
