@@ -367,7 +367,7 @@ datetime.timedelta(days=89)
 >>>  now.astimezone(timezone('Asia/Shanghai')) #得到上海时区
  ```
 **pytz** 是一个第三方库，需要安装
-#迭代器与生成器 
+# 迭代器与生成器 
 迭代器其实就是实现了迭代协议的对象，任何一个实现了__next__方法的对象都是一个迭代器，我们常常会把__iter__也实现了，当调用iter(obj)的时候，其实就是调用了对象的__iter__方法 
 ```python
 class Iter:
@@ -481,7 +481,7 @@ with open('file', 'w+') as f:
     f.write('test')
 ```
 如果我们需要追加到既有的文件中，那就需要使用**a**模式，但是如果我们想要只有该文件不存在的时候才写入，一种方式是显示判断文件是否存在，另外一种方式是指定模式为**x**
-##字符串IO
+## 字符串IO
 可以使用**io.StringIO()**和**io.BytesIO()** 来创建类文件对象操作字符串数据
 ```python
 >>> s = io.StringIO()
@@ -804,7 +804,7 @@ t = Test()
 ```
 当Python解释器加载代码的时候，发现Test类的metaclass是Singleton，此时便依然 次调用Singleton的__new__和__init__方法来创建Test类对象（此时，创建的是Test类，而不是Test的实例，而当运行到 **t = Test()** 的时候，我们需要得到一个Test实例，那么就会调用Singleton的__call__方法去创建实例。
 
-##关于__prepare__
+## 关于__prepare__
 > Preparing the class namespace Once the appropriate metaclass has been identified, then the class namespace is prepared. If the metaclass has a __prepare__ attribute, it is called as namespace = metaclass.__prepare__(name, bases, **kwds) (where the additional keyword arguments, if any, come from the class definition).
 > If the metaclass has no __prepare__ attribute, then the class namespace is initialised as an empty ordered mapping.
 
