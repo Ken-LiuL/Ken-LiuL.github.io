@@ -54,7 +54,7 @@
 <meta property="og:description" content="今天在做Leetcode上的这道找到数组中的majority element题目时候，发现了一个有意思的算法，Boyer-Moore算法，可以在不借助哈希表和排序的情况下，以O(n)的时间复杂度来解决这个问题。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-05-03T09:46:14.000Z">
-<meta property="article:modified_time" content="2020-05-03T10:34:39.717Z">
+<meta property="article:modified_time" content="2020-07-10T14:18:27.733Z">
 <meta property="article:tag" content="数组">
 <meta name="twitter:card" content="summary">
 
@@ -240,10 +240,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-05-03 17:46:14 / 修改时间：18:34:39" itemprop="dateCreated datePublished" datetime="2020-05-03T17:46:14+08:00">2020-05-03</time>
+              <time title="创建时间：2020-05-03 17:46:14" itemprop="dateCreated datePublished" datetime="2020-05-03T17:46:14+08:00">2020-05-03</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-07-10 22:18:27" itemprop="dateModified" datetime="2020-07-10T22:18:27+08:00">2020-07-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -317,22 +323,20 @@
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">     dict := <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>)</span><br><span class="line">     <span class="keyword">for</span> _, n := <span class="keyword">range</span> nums &#123;</span><br><span class="line">         dict[n]++</span><br><span class="line">         <span class="keyword">if</span> dict[n] &gt; <span class="built_in">len</span>(nums) /<span class="number">2</span> &#123;</span><br><span class="line">             <span class="keyword">return</span> n</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>时间复杂度为O(N)，但是空间复杂度为O(N)，并且涉及到哈希表的读取写入和扩容，实际时间并不快。</p>
 <h1 id="Boyer-Moore算法"><a href="#Boyer-Moore算法" class="headerlink" title="Boyer-Moore算法"></a>Boyer-Moore算法</h1><p>该算法可以用O(1)的空间复杂度和O(N)的时间复杂度来解决此类问题，最早在<a href="http://www.cs.rug.nl/~wim/pub/whh348.pdf" target="_blank" rel="noopener">这篇论文</a>被提出。我们先看看代码 </p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    count, res := <span class="number">0</span>, nums[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> _,  n := <span class="keyword">range</span> nums[<span class="number">1</span>:] &#123;</span><br><span class="line">        <span class="keyword">if</span> count == <span class="number">0</span> &#123;</span><br><span class="line">            res = n</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> n == res &#123;</span><br><span class="line">            count++</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            count--</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>我们可以假设majority element为s， 那么数组可以视为[a…s…c…s…b..d…s…s]， 也就是各个s元素之间穿插着其他的元素，由于s的数量超过所有的元素加起来的数量，那么至少有两个s元素连在一起，那么上述的count最终肯定为正数，并且res就为我们要找的元素。<br>假设nums为</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">majorityElement</span><span class="params">(nums []<span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    count, res := <span class="number">0</span>, nums[<span class="number">0</span>]</span><br><span class="line">    <span class="keyword">for</span> _,  n := <span class="keyword">range</span> nums[<span class="number">1</span>:] &#123;</span><br><span class="line">        <span class="keyword">if</span> n == res &#123;</span><br><span class="line">            count++</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> count == <span class="number">0</span> &#123;</span><br><span class="line">            res = n</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            count--</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以假设majority element为s， 那么数组可以视为[a…s…c…s…b..d…s…s]， 也就是各个s元素之间穿插着其他的元素，由于s的数量超过所有的元素加起来的数量，那么至少有两个s元素连在一起，那么上述的count最终肯定为非负数数，并且res就为我们要找的元素。<br>假设nums为</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">5</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">5</span>]</span><br></pre></td></tr></table></figure>
 
 <ol>
-<li>res为5， count++ 一直到2</li>
-<li>遇到0，count– 到1</li>
-<li>遇到0， count– 到0</li>
-<li>res为0， count++ 为1</li>
+<li>res为5，遇到5， count++ 到1</li>
+<li>遇到0，count– 到0</li>
+<li>遇到0， res为0</li>
+<li>遇到0，count++为1</li>
 <li>遇到5， count– 到0</li>
-<li>res为5， count++ 为1</li>
-<li>遇到0， count– 到0</li>
-<li>res为0， count++ 为1</li>
-<li>遇到0， count++ 到2</li>
+<li>遇到0， count++ 为1</li>
+<li>遇到0， count++ 为2</li>
 <li>遇到5， count– 为1</li>
-<li>返回5作为majority element</li>
+<li>返回0作为majority element</li>
 </ol>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Boyer-Moore算法虽然并不直观，但是有良好的时间复杂度和空间复杂度，并且实现的代码非常简洁干净，多思考算法所蕴含的逻辑有助于掌握该算法。</p>
 
@@ -356,7 +360,10 @@
     <a href="/2020/04/24/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%A4%A7%E9%83%A8%E5%88%86%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E9%97%AE%E9%A2%98/" rel="prev" title="动态规划问题的思路和技巧">
       <i class="fa fa-chevron-left"></i> 动态规划问题的思路和技巧
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/07/Python-CookBook/" rel="next" title="Python CookBook">
+      Python CookBook <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -433,18 +440,18 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -492,12 +499,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-area-chart"></i>
     </span>
-    <span title="站点总字数">10k</span>
+    <span title="站点总字数">31k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">9 分钟</span>
+    <span title="站点阅读时长">28 分钟</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
   </div>
